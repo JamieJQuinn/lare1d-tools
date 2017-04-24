@@ -38,14 +38,26 @@ class Energy:
         fortran_int = fp.read(integer_byte_size)
         return self.fortran_to_int(fortran_int)
 
+    def print_max_at(self, t):
+        idx = (np.abs(self.data[:, 0]-t)).argmin()
+        print("{0} & {1} \\\\".format(format_number(self.data[idx, 8]), format_number(self.data[idx, 9])))
+
+def format_number(num):
+    num = float(num)
+    num = "{:.2e}".format(num)
+    mant, exp = num.split('e')
+    return "{0} \\times 10^{{{1}}}".format(mant, exp)
+
 fname = sys.argv[1]
 en = Energy(fname)
-print(en.varnames)
-fig, ax = plt.subplots()
-en.plot(4)
-if en.en_nvars > 6:
-    en.plot(8)
-    en.plot(9)
-ax.set_ylim(1e-12, 1e-2)
-ax.set_xlim(1, 10)
-plt.show()
+# print(en.varnames)
+en.print_max_at(5.0)
+en.print_max_at(10.0)
+# fig, ax = plt.subplots()
+# en.plot(4)
+# if en.en_nvars > 6:
+    # en.plot(8)
+    # en.plot(9)
+# ax.set_ylim(1e-12, 1e-2)
+# ax.set_xlim(1, 10)
+# plt.show()
