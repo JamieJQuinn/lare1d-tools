@@ -31,7 +31,6 @@ done
 compiler=''
 mpif90='mpif90'
 if [ "$machine" == "euclid" ]; then
-  export PATH=/usr/lib64/openmpi/bin:$PATH
   compiler='gfortran'
 elif [ "$machine" == "archie" ]; then
   module load $COMPILER_MODULE
