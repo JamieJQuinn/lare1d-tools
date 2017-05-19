@@ -32,6 +32,14 @@ compiler=''
 mpif90='mpif90'
 if [ "$machine" == "euclid" ]; then
   compiler='gfortran'
+elif [ "$machine" == "euclid-torque" ]; then
+  # GCC
+  export PATH=/home/pgrad2/1101974q/prog/gcc-euclid/gcc-6.3.0-build/bin:$PATH
+  export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/gcc-euclid/gcc-6.3.0-build/lib:$LD_LIBRARY_PATH
+  # OPENMPI
+  export PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/bin:$PATH
+  export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/lib:$LD_LIBRARY_PATH
+  compiler='gfortran'
 elif [ "$machine" == "archie" ]; then
   module load $COMPILER_MODULE
   module load $MPI_LIB_MODULE
