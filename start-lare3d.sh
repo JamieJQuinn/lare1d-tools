@@ -27,6 +27,6 @@ export PROCS_ON_EACH_NODE=12
 export NCORES=`expr $PROCS_ON_EACH_NODE \* $NSLOTS`
 export OMPI_MCA_btl=openib,self
 
-BINARY=lare3d
+BINARY=bin/lare3d
 module load $MPI_LIB_MODULE
 mpirun -np $NCORES $BINARY
