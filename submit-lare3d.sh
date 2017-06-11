@@ -14,7 +14,6 @@ done
 
 cp $lare3d_folder/lare3d-code/bin/* .
 cp $lare3d_folder/start-lare3d.sh .
-module load $MPI_LIB_MODULE
 
 if [ "$skip_checks" == "false" ]; then
   $lare3d_folder/check-lare3d-options.sh

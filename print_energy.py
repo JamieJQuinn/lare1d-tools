@@ -56,10 +56,6 @@ class Energy:
 
         f.close()
 
-    def plot(self, ax, index):
-        ax.plot(en.data[:, 0], en.data[:,index], label=self.varnames[index])
-        ax.legend()
-
     def fortran_to_int(self, n):
         return int(n[::-1].encode('hex'), 16)
 
@@ -80,7 +76,7 @@ def format_number(num):
 
 parser = argparse.ArgumentParser(description='Print/plot lare3d en.dat files')
 
-parser.add_argument('filename', help='energy file to open')
+parser.add_argument('filenames', help='energy files to open', nargs='+')
 parser.add_argument('--print_latest', action='store_true',
                     help='print latest row')
 parser.add_argument('--print_all', action='store_true',
@@ -104,13 +100,17 @@ parser.add_argument('--plot_all', action='store_true',
                     help='plot all variables')
 parser.add_argument('--debug', action='store_true',
                     help='Enable debug mode')
+parser.add_argument('--save', action='store_true',
+                    help='Save graph')
+parser.add_argument('--output',
+                    help='output filename')
 
 args = parser.parse_args()
 
 if args.debug:
     print args
 
-en = Energy(args.filename, slice_vec=args.slice_vec, skip=args.bytes_to_skip, nvars=args.nvars)
+energies = [Energy(f, slice_vec=args.slice_vec, skip=args.bytes_to_skip, nvars=args.nvars) for f in args.filenames]
 
 if args.print_varnames:
     print en.varnames
@@ -133,12 +133,22 @@ if args.plot_dt:
     plt.show()
 
 if args.plot_columns:
-    fig, axes = plt.subplots(len(args.plot_columns), sharex=True)
-    for axis, index in zip(axes, args.plot_columns):
-        en.plot(axis, index)
-        if args.ylim:
-            ax.set_ylim(args.ylim[0], args.ylim[1])
-        if args.xlim:
-            ax.set_xlim(args.xlim[0], args.xlim[1])
+    fig, axes = plt.subplots(len(args.plot_columns), sharex=True, figsize=(2*len(args.plot_columns), 10))
+    for en, f in zip(energies, args.filenames):
+        for axis, index in zip(axes, args.plot_columns):
+            axis.plot(en.data[:, 0], en.data[:,index], label=f.split('/')[0])
+            axis.set_title(en.varnames[index])
+            axis.legend()
+            if args.ylim:
+                ax.set_ylim(args.ylim[0], args.ylim[1])
+            if args.xlim:
+                ax.set_xlim(args.xlim[0], args.xlim[1])
     plt.tight_layout()
-    plt.show()
+    if args.save:
+        if args.output:
+            output = args.output
+        else:
+            output = "print_energy.png"
+        plt.savefig(output)
+    else:
+        plt.show()
