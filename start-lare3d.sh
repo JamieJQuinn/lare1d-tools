@@ -8,7 +8,7 @@ export PROCS_ON_EACH_NODE=12
 #Specify project
 #$ -P mactaggart-aMHD.prj
 #Select parallel environment and number of parallel queue slots (nodes)
-#$ -pe mpi-verbose 2
+#$ -pe mpi-verbose 4
 #Send to parallel queue
 #$ -q parallel-low.q
 #Combine STDOUT/STDERR
@@ -18,7 +18,7 @@ export PROCS_ON_EACH_NODE=12
 #Request resource reservation (reserve slots on each scheduler run until enough have been gathered to run the job
 #$ -R y
 #Runtime
-#$ -l h_rt=40:00:00
+#$ -l h_rt=48:00:00
 
 # Add runtime indication
 #$ -ac runtime=""
