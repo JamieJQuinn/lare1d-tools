@@ -4,10 +4,9 @@ mpi_opts=''
 n_proc_arg=''
 output_dir=''
 lare_dir='.'
-clean=false
-exe='mpirun -np $n_proc $mpi_opts lare3d'
+skip_checks="false"
 
-while getopts "n:m:o:i:" flag; do
+while getopts "n:m:o:i:y" flag; do
   case "${flag}" in
     # Set number of processes to launch
     n) n_proc_arg="${OPTARG}" ;;
@@ -17,6 +16,8 @@ while getopts "n:m:o:i:" flag; do
     o) output_dir="${OPTARG}" ;;
     # lare3d folder location
     i) lare_dir="${OPTARG}" ;;
+    # skip checks
+    y) skip_checks="true" ;;
   esac
 done
 
@@ -25,15 +26,11 @@ if [ "$machine" == "euclid" ]; then
   export PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/bin:$PATH
   export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/lib:$LD_LIBRARY_PATH
   mpi_opts+='--mca pml ob1'
+  n_proc=$(($(nproc)/2))
 elif [ "$machine" == "euclid-torque" ]; then
   export PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/bin:$PATH
   export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/lib:$LD_LIBRARY_PATH
-  #mpi_opts+="--mca btl_base_verbose 30 --mca btl_tcp_if_exclude virbr0,lo"
   mpi_opts+="--mca btl_tcp_if_exclude virbr0,lo"
-elif [ "$machine" == "euclid-torque-intel" ]; then
-  . /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh
-  n_proc=0 # Just need to define variable
-  exe='mpirun ./lare3d'
 elif [ "$machine" == "office" ]; then
   n_proc=4
 fi
@@ -49,21 +46,16 @@ fi
 
 data_dir=$(sed -n "s/data_dir = '\(.*\)'/\1/p" $lare_dir/bin/build_state)
 
-if [ "$data_dir" == '' ] || [ "$output_dir" == '' ]; then
-  echo "No output dir or data dir supplied"
-  exit
+if [ "$skip_checks" == "false" ]; then
+  echo "Are you inside the lare folder?"
+  read answer
+  if [ "$answer" != "y" ]; then
+    echo "Answer not 'y'. Exiting."
+    exit -1
+  fi
 fi
 
-# Run
-if [ "$output_dir" != '' ]; then
-  mkdir -p $output_dir/$data_dir
-  cp $lare_dir/bin/* $output_dir
-  cd $output_dir
-  time eval $exe
-  if [ "$data_dir" != '.' ]; then
-    mv $data_dir/* $output_dir
-    rmdir $data_dir
-  fi
-else
-  echo "No output directory given"
-fi
+mkdir -p Data
+exe="mpirun -np $n_proc $mpi_opts bin/lare3d"
+
+time $exe
