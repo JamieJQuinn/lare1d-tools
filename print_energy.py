@@ -113,21 +113,21 @@ if args.debug:
 energies = [Energy(f, slice_vec=args.slice_vec, skip=args.bytes_to_skip, nvars=args.nvars) for f in args.filenames]
 
 if args.print_varnames:
-    print en.varnames
+    print energies[0].varnames
 
 if args.print_latest:
-    print en.data[-1]
+    print energies[0].data[-1]
 
 if args.print_all:
-    for row in en.data:
+    for row in energies[0].data:
         np.set_printoptions(linewidth=140)
         print row
 
 if args.plot_all:
-    args.plot_columns = range(1, en.en_nvars)
+    args.plot_columns = range(1, energies[0].en_nvars)
 
 if args.plot_dt:
-    time = en.data[:, 0]
+    time = energies[0].data[:, 0]
     dt = time[1:] - time[:-1]
     plt.plot(dt)
     plt.show()
