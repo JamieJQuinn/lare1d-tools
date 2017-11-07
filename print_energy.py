@@ -129,7 +129,7 @@ if args.plot_all:
 if args.plot_dt:
     time = energies[0].data[:, 0]
     dt = time[1:] - time[:-1]
-    plt.plot(dt)
+    plt.plot(time[:-1],dt)
     plt.show()
 
 if args.plot_columns:
