@@ -71,7 +71,7 @@ if [ "$n_grid_points" != 'false' ]; then
 fi
 
 # Clean
-make cleanall
+make clean
 
 # Build
 make MPIF90=$mpif90 COMPILER=$compiler DEFINE="$defines" MODE="$mode"
