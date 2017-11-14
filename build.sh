@@ -70,6 +70,9 @@ if [ "$n_grid_points" != 'false' ]; then
   sed -i -e 's/\(n[xyz]_global = \)[0-9]*/\1'${n_grid_points}'/' src/control.f90
 fi
 
+# Clean
+make cleanall
+
 # Build
 make MPIF90=$mpif90 COMPILER=$compiler DEFINE="$defines" MODE="$mode"
 
