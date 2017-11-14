@@ -5,9 +5,7 @@ set -e
 # Get directory of script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}"  )" && pwd  )"
 
-#for eta_background in '1.0e-3_num'; do
-  #for visc_mode in '-b'; do
-for eta_background in '1.0e-4_num' '1.0e-3_num'; do
+for eta_background in '1.0e-3_num'; do
   for visc_mode in '-b' '-s' ''; do
     cd ~/lare3d
     output_dir=~/lustre-folder/lare3d-runs/kink_instability/high_res/$eta_background$visc_mode

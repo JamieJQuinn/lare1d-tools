@@ -1,7 +1,6 @@
 #
 
 export PROCS_ON_EACH_NODE=12
-folder_name=$(pwd | awk -F '/' '{print $NF}')
 
 # ************* SGE qsub options ****************
 #Export env variables and keep current working directory
@@ -20,8 +19,9 @@ folder_name=$(pwd | awk -F '/' '{print $NF}')
 #$ -R y
 #Runtime
 #$ -l h_rt=48:00:00
-#Name
-#$ -N $folder_name
+#Mail Options
+#$ -m bea
+#$ -M j.quinn.1@research.gla.ac.uk
 
 # Add runtime indication
 #$ -ac runtime=""
