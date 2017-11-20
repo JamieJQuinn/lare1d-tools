@@ -8,7 +8,7 @@ output='true'
 mode=''
 defines=''
 
-while getopts "bsdoi:m:p:" flag; do
+while getopts "bsdoli:m:p:" flag; do
   case "${flag}" in
     # Enable braginskii visc
     b) defines+=' -DBRAGINSKII_VISCOSITY' ;;
@@ -16,6 +16,8 @@ while getopts "bsdoi:m:p:" flag; do
     s) defines+=' -DSWITCHING_VISCOSITY' ;;
     # Output continuous viscous heating
     o) defines+=' -DOUTPUT_CONTINUOUS_VISC_HEATING' ;;
+    # Output density change due to limiter
+    l) defines+=' -DLIMIT_DENSITY' ;;
     # Enable debug
     d) mode='debug' ;;
     # Set machine
