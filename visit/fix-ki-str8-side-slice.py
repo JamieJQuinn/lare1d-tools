@@ -48,8 +48,9 @@ for filename in filenames:
     else:
       fig_fname = variable.split("/")[-1] + "_v-" + visc_exp + "r-" + resist_exp + "_isotropic_" + "_" + t_step
 
-    print fig_fname
+    if not os.path.isfile(fig_fname+".png"):
+        print("missing " + fig_fname)
+        save_fig(filename, fig_fname, variable)
 
-    save_fig(filename, fig_fname, variable)
 
 sys.exit()
