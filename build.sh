@@ -49,12 +49,13 @@ elif [ "$machine" == "euclid-torque" ]; then
   export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/lib:$LD_LIBRARY_PATH
   compiler='gfortran'
 elif [ "$machine" == "euclid-torque-intel" ]; then
+  . /maths/intel/bin/compilervars.sh intel64
   . /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh
-  export PATH=/home/pgrad2/1101974q/prog/gcc-euclid/gcc-6.3.0-build/bin:$PATH
-  export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/gcc-euclid/gcc-6.3.0-build/lib:$LD_LIBRARY_PATH
-  compiler='gfortran'
-  #mpif90='mpiifort'
-  #compiler='intel'
+  #export PATH=/home/pgrad2/1101974q/prog/gcc-euclid/gcc-6.3.0-build/bin:$PATH
+  #export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/gcc-euclid/gcc-6.3.0-build/lib:$LD_LIBRARY_PATH
+  #compiler='gfortran'
+  mpif90='mpiifort'
+  compiler='intel'
 elif [ "$machine" == "archie" ]; then
   module load $COMPILER_MODULE
   module load $MPI_LIB_MODULE

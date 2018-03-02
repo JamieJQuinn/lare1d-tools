@@ -1,13 +1,12 @@
 #!/bin/bash
 #PBS -V
-#PBS -N jamie-lare3d
 #PBS -l nodes=4:ppn=12
 #PBS -j oe
-#PBS -l walltime=100:00:00
+#PBS -l walltime=24:00:00
 #PBS -M j.quinn.1@research.gla.ac.uk
 #PBS -m abe
 
 NP=$(wc -l $PBS_NODEFILE | awk '{print $1}')
 
 cd "$PBS_O_WORKDIR"
-$HOME/prog/lare3d-tools/run.sh -m euclid-torque-intel -n $NP -i $HOME/prog/lare3d -o '.'
+$HOME/prog/lare3d-tools/run.sh -y -m euclid-torque -n $NP
