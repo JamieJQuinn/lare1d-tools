@@ -25,23 +25,18 @@ n_proc=''
 if [ "$machine" == "euclid" ]; then
   export PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/bin:$PATH
   export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/lib:$LD_LIBRARY_PATH
-  mpi_opts+='--mca pml ob1'
   n_proc=$(($(nproc)/2))
+  mpi_opts+="-np $n_proc --mca pml ob1"
 elif [ "$machine" == "euclid-torque" ]; then
   export PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/bin:$PATH
   export LD_LIBRARY_PATH=/home/pgrad2/1101974q/prog/openmpi-euclid/open-mpi-build/lib:$LD_LIBRARY_PATH
-  mpi_opts+="--mca btl_tcp_if_exclude virbr0,lo"
+  mpi_opts+="-np $n_proc_arg --mca btl_tcp_if_exclude virbr0,lo"
+elif [ "$machine" == "euclid-torque-intel" ]; then
+  . /maths/intel/bin/compilervars.sh intel64
+  . /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpivars.sh
+  mpi_opts+="-n $n_proc_arg -ppn 12 --mca btl_tcp_if_exclude virbr0,lo"
 elif [ "$machine" == "office" ]; then
-  n_proc=4
-fi
-
-if [ "$n_proc_arg" != '' ]; then
-  n_proc=$n_proc_arg
-fi
-
-if [ "$n_proc" == '' ]; then
-  echo "No processor number provided"
-  exit
+  mpi_opts+="-np 4"
 fi
 
 data_dir=$(sed -n "s/data_dir = '\(.*\)'/\1/p" $lare_dir/bin/build_state)
@@ -56,6 +51,6 @@ if [ "$skip_checks" == "false" ]; then
 fi
 
 mkdir -p Data
-exe="mpirun -np $n_proc $mpi_opts bin/lare3d"
+exe="mpirun $mpi_opts bin/lare3d"
 
-time $exe
+(time $exe) 2>&1
