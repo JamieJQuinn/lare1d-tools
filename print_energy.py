@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,32 +7,37 @@ import sys
 
 class Energy:
     def __init__(self, fname, slice_vec=[], skip=0, nvars=None):
+        self.valid = True
         self.fromfile(fname, slice_vec, skip, nvars)
 
     def read_data(self, f, slice_vec, en_nvars):
-        print "LOADING DATA"
+        print("LOADING DATA")
         self.data = np.fromfile(f, dtype=np.float64)
-        print "data size:", len(self.data)
+        print("data size:", len(self.data))
+
+        if(len(self.data) == 0):
+            self.valid = False
+            return
 
         n_timesteps = int(len(self.data)/en_nvars)
-        print "n_timesteps:", n_timesteps
+        print("n_timesteps:", n_timesteps)
 
         offset = len(self.data) - n_timesteps*en_nvars
-        print "offset:", offset
+        print("offset:", offset)
         if offset:
-            print "spare numbers:", self.data[-offset:]
+            print("spare numbers:", self.data[-offset:])
             self.data = self.data[:-offset]
 
         self.data = self.data.reshape((n_timesteps, en_nvars))
         if slice_vec:
-            print "Slice:", slice_vec
+            print("Slice:", slice_vec)
             self.data = self.data[slice_vec[0] : slice_vec[1]]
 
     def fromfile(self, fname, slice_vec=[], skip=0, nvars=0):
         f = open(fname, 'rb')
 
         if skip == 0:
-            print "LOADING HEADER"
+            print("LOADING HEADER")
             self.magic         = f.read(3)
             self.version       = self.read_int(f)
             self.revision      = self.read_int(f)
@@ -42,13 +47,13 @@ class Energy:
             self.en_nvars      = self.read_int(f)
             self.id_length     = self.read_int(f)
             self.varnames      = f.read(self.en_nvars*self.id_length).split()
-            print "version:", self.version
-            print "revision:", self.revision
-            print "endianness:", self.endianness
-            print "header_length:", self.header_length
-            print "num_sz:", self.num_sz
-            print "n_vars:", self.en_nvars
-            print "id_length:", self.id_length
+            print("version:", self.version)
+            print("revision:", self.revision)
+            print("endianness:", self.endianness)
+            print("header_length:", self.header_length)
+            print("num_sz:", self.num_sz)
+            print("n_vars:", self.en_nvars)
+            print("id_length:", self.id_length)
             self.read_data(f, slice_vec, self.en_nvars)
         else:
             f.read(skip)
@@ -57,7 +62,7 @@ class Energy:
         f.close()
 
     def fortran_to_int(self, n):
-        return int(n[::-1].encode('hex'), 16)
+        return int.from_bytes(n, byteorder='little')
 
     def read_int(self, fp):
         integer_byte_size = 4
@@ -108,20 +113,20 @@ parser.add_argument('--output',
 args = parser.parse_args()
 
 if args.debug:
-    print args
+    print(args)
 
 energies = [Energy(f, slice_vec=args.slice_vec, skip=args.bytes_to_skip, nvars=args.nvars) for f in args.filenames]
 
 if args.print_varnames:
-    print energies[0].varnames
+    print(energies[0].varnames)
 
 if args.print_latest:
-    print energies[0].data[-1]
+    print(energies[0].data[-1])
 
 if args.print_all:
     for row in energies[0].data:
         np.set_printoptions(linewidth=140)
-        print row
+        print(row)
 
 if args.plot_all:
     args.plot_columns = range(1, energies[0].en_nvars)
@@ -147,19 +152,20 @@ if args.plot_columns:
     colours = ['C' + str(i) for i in range(8)]
     colourMap = {}
     for en, f in zip(energies, args.filenames):
-        simMode = "".join(f.split("-")[:-1])
-        if simMode not in colourMap:
-            colourMap[simMode] = colours.pop()
-        for axis, index in zip(axes, args.plot_columns):
-            axis.plot(en.data[:, 0], en.data[:,index],
-                      colourMap[simMode] + formLineStyle(f),
-                      label="/".join(f.split("/")[:-2]))
-            axis.set_title(en.varnames[index])
-            axis.legend()
-            if args.ylim:
-                ax.set_ylim(args.ylim[0], args.ylim[1])
-            if args.xlim:
-                ax.set_xlim(args.xlim[0], args.xlim[1])
+        if en.valid:
+            simMode = "".join(f.split("-")[:-1])
+            if simMode not in colourMap:
+                colourMap[simMode] = colours.pop()
+            for axis, index in zip(axes, args.plot_columns):
+                axis.plot(en.data[:, 0], en.data[:,index],
+                          colourMap[simMode] + formLineStyle(f),
+                          label="/".join(f.split("/")[:-2]))
+                axis.set_title(en.varnames[index])
+                axis.legend()
+                if args.ylim:
+                    axis.set_ylim(args.ylim[0], args.ylim[1])
+                if args.xlim:
+                    axis.set_xlim(args.xlim[0], args.xlim[1])
     plt.tight_layout()
     if args.save:
         if args.output:
