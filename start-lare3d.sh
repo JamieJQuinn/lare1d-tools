@@ -1,35 +1,56 @@
+#!/bin/bash
+
+#======================================================
 #
+# Job script for running a parallel job on a single node
+#
+#======================================================
 
-export PROCS_ON_EACH_NODE=12
+#======================================================
+# Propogate environment variables to the compute node
+#SBATCH --export=ALL
+#
+# Run in the standard partition (queue)
+#SBATCH --partition=standard
+#
+# Specify project account
+#SBATCH --account=mactaggart-aMHD
+#
+# No. of tasks required (max. of 40)
+#SBATCH --ntasks=40
+#
+# Ensure the node is not shared with another job
+#SBATCH --exclusive
+#
+# Specify (hard) runtime (HH:MM:SS)
+#SBATCH --time=48:00:00
+#
+# Output file
+#SBATCH --output=slurm-%j.out
+#======================================================
 
-# ************* SGE qsub options ****************
-#Export env variables and keep current working directory
-#$ -V -cwd
-#Specify project
-#$ -P mactaggart-aMHD.prj
-#Select parallel environment and number of parallel queue slots (nodes)
-#$ -pe mpi-verbose 4
-#Send to parallel queue
-#$ -q parallel-low.q
-#Combine STDOUT/STDERR
-#$ -j y
-#Specify output file
-#$ -o out.$JOB_ID
-#Request resource reservation (reserve slots on each scheduler run until enough have been gathered to run the job
-#$ -R y
-#Runtime
-#$ -l h_rt=48:00:00
-#Mail Options
-#$ -m bea
-#$ -M j.quinn.1@research.gla.ac.uk
+module purge
 
-# Add runtime indication
-#$ -ac runtime=""
-# ************** END SGE qsub options ************
+# choose which version to load (foss 2018a contains the gcc 6.4.0 toolchain & openmpi 2.12)
+module load foss/2018a
 
-export NCORES=`expr $PROCS_ON_EACH_NODE \* $NSLOTS`
+#=========================================================
+# Prologue script to record job details
+# Do not change the line below
+#=========================================================
+/opt/software/scripts/job_prologue.sh 
+#----------------------------------------------------------
+
+# Modify the line below to run your program
 export OMPI_MCA_btl=openib,self
 
 BINARY=bin/lare3d
 module load $MPI_LIB_MODULE
-mpirun -np $NCORES $BINARY
+mpirun -np $SLURM_NPROCS $BINARY
+
+#=========================================================
+# Epilogue script to record job endtime and runtime
+# Do not change the line below
+#=========================================================
+/opt/software/scripts/job_epilogue.sh 
+#----------------------------------------------------------
