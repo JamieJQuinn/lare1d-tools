@@ -54,9 +54,9 @@ elif [ "$machine" == "euclid-torque-intel" ]; then
   mpif90='mpiifort'
   compiler='intel'
 elif [ "$machine" == "archie" ]; then
-  module load $COMPILER_MODULE
   module load $MPI_LIB_MODULE
-  compiler='intel'
+  module load $COMPILER_MODULE
+  compiler='gfortran'
 elif [ "$machine" != "" ]; then
   compiler='gfortran'
   echo "Machine specified but no special conditions, using gfortran"
