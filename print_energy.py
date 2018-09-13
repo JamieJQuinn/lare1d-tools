@@ -132,11 +132,28 @@ if args.plot_dt:
     plt.plot(time[:-1],dt)
     plt.show()
 
+def formLineStyle(filename):
+    linestyle = ''
+    if filename.split("/")[-3].split("-")[-1] == "switching":
+        linestyle = '--'
+    if filename.split("/")[-3].split("-")[-3] == "20r":
+        linestyle = ':'
+
+    return linestyle
+
+
 if args.plot_columns:
     fig, axes = plt.subplots(len(args.plot_columns), sharex=True, figsize=(2*len(args.plot_columns), 10))
+    colours = ['C' + str(i) for i in range(8)]
+    colourMap = {}
     for en, f in zip(energies, args.filenames):
+        simMode = "".join(f.split("-")[:-1])
+        if simMode not in colourMap:
+            colourMap[simMode] = colours.pop()
         for axis, index in zip(axes, args.plot_columns):
-            axis.plot(en.data[:, 0], en.data[:,index], label=f.split('/')[0])
+            axis.plot(en.data[:, 0], en.data[:,index],
+                      colourMap[simMode] + formLineStyle(f),
+                      label="/".join(f.split("/")[:-2]))
             axis.set_title(en.varnames[index])
             axis.legend()
             if args.ylim:
